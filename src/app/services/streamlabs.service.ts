@@ -1,27 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { ITokenData } from '../models/ITokenData';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from 'src/environments/environment';
+import {ITokenData} from '../models/api/ITokenData';
+import {IApiResponse} from "../models/api/IApiResponse";
 
 @Injectable({
   providedIn: 'root'
 })
 export class StreamLabsService {
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
-  getTokenFromCode(code: string): Observable<ITokenData> {
-    const headers = new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('X-Requested-With', 'XMLHttpRequest');
-
-    const body = {
-      grant_type: 'authorization_code',
-      client_id: environment.streamlabs_app_id,
-      client_secret: environment.streamlabs_app_secret,
-      redirect_uri: `${environment.app_domain}/auth`,
-      code
-    }
-    return this.http.post<ITokenData>(`${environment.app_domain}/api/v2.0/token`, body, { headers });
+  getTokenFromCode(code: string): Observable<IApiResponse<ITokenData>> {
+    return this.http.post<IApiResponse<ITokenData>>(`${environment.api_url}/streamlabs?code=${code}`, {});
   }
 }

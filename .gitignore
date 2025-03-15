@@ -10,7 +10,7 @@
 /node_modules
 npm-debug.log
 yarn-error.log
-pnpm-lock.yaml
+package-lock.json
 
 # IDEs and editors
 .idea/
@@ -42,3 +42,8 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+.env
+
+# Local Netlify folder
+.netlify

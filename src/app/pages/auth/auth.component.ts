@@ -1,9 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { ITokenData } from 'src/app/models/ITokenData';
-import { StreamLabsService } from 'src/app/services/streamlabs.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ToastrService} from 'ngx-toastr';
+import {IApiResponse} from "../../models/api/IApiResponse";
+import {ITokenData} from 'src/app/models/api/ITokenData';
+import {StreamLabsService} from 'src/app/services/streamlabs.service';
 
 @Component({
   selector: 'app-auth',
@@ -15,35 +16,35 @@ export class AuthComponent implements OnInit {
   expiresOn!: Date;
 
   constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private streamlabsService: StreamLabsService,
-    private toastr: ToastrService
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute,
+    private readonly streamlabsService: StreamLabsService,
+    private readonly toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
       const code: string = params['code'];
       if (!code) {
-        this.router.navigateByUrl('');
+        void this.router.navigateByUrl('');
         return;
       }
 
       this.streamlabsService.getTokenFromCode(code)
       .subscribe({
-        next: (data) => {
-          this.data = {
-            access_token: data.access_token.substring(0, 50),
-            refresh_token: data.access_token.substring(0, 50),
-            expires_in: data.expires_in,
-          };
+        next: (res: IApiResponse<ITokenData>) => {
+          if (!res.success) {
+            this.toastr.error(res.error ?? res.message ?? "Unknown Error");
+            return;
+          }
+
+          const data: ITokenData = res.data;
+          this.data = res.data;
           this.expiresOn = new Date(Date.now() + data.expires_in);
         },
         error: (err: HttpErrorResponse) => {
           console.error(err.message);
-          this.toastr.error(
-            'Unable to generate an access_token and a refresh_token.'
-          );
+          this.toastr.error(`Unable to generate token: ${err.statusText} (${err.status})`);
         }
       });
     });
@@ -51,30 +52,30 @@ export class AuthComponent implements OnInit {
 
   copyAccessToken(): void {
     if (this.data?.access_token) {
-      navigator.clipboard.writeText(this.data.access_token);
-      this.clipboardToast(true, 'access');
+      void navigator.clipboard.writeText(this.data.access_token);
+      this.clipboardSuccess('access');
     } else {
-      this.clipboardToast(false, 'access');
+      this.clipboardError('access');
     }
   }
 
   copyRefreshToken(): void {
     if (this.data?.refresh_token) {
-      navigator.clipboard.writeText(this.data.refresh_token);
-      this.clipboardToast(true, 'refresh');
+      void navigator.clipboard.writeText(this.data.refresh_token);
+      this.clipboardSuccess('refresh');
     } else {
-      this.clipboardToast(false, 'refresh');
+      this.clipboardError('refresh');
     }
   }
 
-  private clipboardToast(success: boolean, type: 'access' | 'refresh') {
-    if (success) {
-      this.toastr.success(
-        `Successfully copied ${type} token to clipboard !`,
-        'Success !'
-      );
-    } else {
-      this.toastr.error(`Unable to copy ${type} token to clipboard.`, 'Error');
-    }
+  private clipboardSuccess(type: 'access' | 'refresh') {
+    this.toastr.success(
+      `Successfully copied ${type} token to clipboard !`,
+      'Success !'
+    );
+  }
+
+  private clipboardError(type: 'access' | 'refresh') {
+    this.toastr.error(`Unable to copy ${type} token to clipboard.`, 'Error');
   }
 }

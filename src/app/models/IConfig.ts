@@ -1,4 +1,4 @@
-import { IEvent } from "./IEvent";
+import {IEvent} from "./IEvent";
 
 export interface IConfig {
   tokens: {
@@ -6,6 +6,6 @@ export interface IConfig {
     refreshToken: string;
     expiresAt: number;
   }
-  
+
   events: IEvent[];
 }
