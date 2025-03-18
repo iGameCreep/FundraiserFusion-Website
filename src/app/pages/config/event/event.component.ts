@@ -10,6 +10,7 @@ import { IEvent } from 'src/app/models/IEvent';
   selector: 'app-event',
   templateUrl: './event.component.html',
   styleUrls: ['./event.component.scss'],
+  standalone: false,
 })
 export class EventComponent {
   @ViewChild(InputModalComponent) inputModal!: InputModalComponent;

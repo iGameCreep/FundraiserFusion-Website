@@ -10,6 +10,7 @@ import {StreamLabsService} from 'src/app/services/streamlabs.service';
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
+  standalone: false,
 })
 export class AuthComponent implements OnInit {
   data: ITokenData | null = null;

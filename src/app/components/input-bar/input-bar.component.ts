@@ -3,7 +3,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-input-bar',
   templateUrl: './input-bar.component.html',
-  styleUrls: ['./input-bar.component.scss']
+  styleUrls: ['./input-bar.component.scss'],
+  standalone: false,
 })
 export class InputBarComponent {
   @Output() keyUp = new EventEmitter<string>();

@@ -11,6 +11,7 @@ import { InputModalComponent } from '../input-modal/input-modal.component';
   selector: 'app-search-modal',
   templateUrl: './search-modal.component.html',
   styleUrls: ['./search-modal.component.scss'],
+  standalone: false,
 })
 export class SearchModalComponent {
   @ViewChild(InputModalComponent) inputModal!: InputModalComponent;

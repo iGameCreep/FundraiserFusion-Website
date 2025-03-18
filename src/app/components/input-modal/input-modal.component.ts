@@ -12,6 +12,7 @@ import { InputBarComponent } from '../input-bar/input-bar.component';
   selector: 'app-input-modal',
   templateUrl: './input-modal.component.html',
   styleUrls: ['./input-modal.component.scss'],
+  standalone: false,
 })
 export class InputModalComponent {
   @ViewChild(PopupModalComponent) popupModal!: PopupModalComponent;

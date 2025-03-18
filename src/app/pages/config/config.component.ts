@@ -8,6 +8,7 @@ import { IEvent } from 'src/app/models/IEvent';
   selector: 'app-config',
   templateUrl: './config.component.html',
   styleUrls: ['./config.component.scss'],
+  standalone: false,
 })
 export class ConfigComponent implements OnInit {
   events!: IEvent[];

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "streamlabsplugin": {
+    "fundraiserfusion": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/streamlabsplugin",
+            "outputPath": "dist/fundraiserfusion",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -66,21 +66,15 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "streamlabsplugin:build:production"
+              "buildTarget": "fundraiserfusion:build:production"
             },
             "development": {
-              "browserTarget": "streamlabsplugin:build:development"
+              "buildTarget": "fundraiserfusion:build:development"
             }
           },
           "defaultConfiguration": "development",
           "options": {
             "proxyConfig": "src/proxy.conf.json"
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "streamlabsplugin:build"
           }
         },
         "test": {

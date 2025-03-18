@@ -5,6 +5,7 @@ import {environment} from "../../../environments/environment";
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
+  standalone: false,
 })
 export class LandingComponent {
   protected api_url: string = environment.api_url;
