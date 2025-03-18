@@ -10,5 +10,7 @@
 
     <h2 class="outfit">Expires On</h2>
     <p class="outfit">{{ expiresOn | date : "long" }}</p>
+
+    <button (click)="generateSecretsFile()" class="btn btn-success">Generate Secrets File</button>
   </div>
 </section>

@@ -78,4 +78,21 @@ export class AuthComponent implements OnInit {
   private clipboardError(type: 'access' | 'refresh') {
     this.toastr.error(`Unable to copy ${type} token to clipboard.`, 'Error');
   }
+
+  protected generateSecretsFile(): void {
+    const newData = {
+      ...this.data,
+      expires_on: this.expiresOn,
+    }
+
+    const blob = new Blob([JSON.stringify(newData)], { type: 'text/plain' });
+    const url: string = window.URL.createObjectURL(blob);
+
+    const a: HTMLAnchorElement = document.createElement('a');
+    a.href = url;
+    a.download = 'secrets.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }

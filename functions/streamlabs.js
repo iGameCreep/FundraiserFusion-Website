@@ -10,7 +10,7 @@ const ENV = {
   STREAMLABS_APP_URL: process.env['STREAMLABS_APP_URL'],
   STREAMLABS_APP_ID: process.env['STREAMLABS_APP_ID'],
   STREAMLABS_APP_SECRET: process.env['STREAMLABS_APP_SECRET'],
-  STREAMLABS_APP_SCOPES: ['donations.read'],
+  STREAMLABS_APP_SCOPES: ['donations.read', 'socket.token'],
 }
 
 const streamlabs_app_url = new URL(ENV.STREAMLABS_APP_URL);
@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 302,
       headers: {
-        Location: streamlabs_app_url,
+        Location: decodeURIComponent(streamlabs_app_url.toString()),
         'Cache-Control': 'no-cache',
       },
       body: 'Redirecting...',
