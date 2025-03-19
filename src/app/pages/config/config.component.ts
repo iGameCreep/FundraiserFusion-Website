@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { Action } from 'src/app/models/Action';
-import { EntityType } from 'src/app/models/EntityType';
-import { IEvent } from 'src/app/models/IEvent';
+import {Component} from '@angular/core';
+import {ToastrService} from 'ngx-toastr';
+import {IEvent} from 'src/app/models/IEvent';
+import {ACTIONS} from "../../models/IAction";
 
 @Component({
   selector: 'app-config',
@@ -10,28 +9,50 @@ import { IEvent } from 'src/app/models/IEvent';
   styleUrls: ['./config.component.scss'],
   standalone: false,
 })
-export class ConfigComponent implements OnInit {
-  events!: IEvent[];
-  fileName!: string;
+export class ConfigComponent {
+
+  protected showEventModal: boolean = false;
+  protected selectedEvent: IEvent | undefined = undefined;
+  protected events: IEvent[] = [];
+  protected fileName!: string;
 
   constructor(private toastr: ToastrService) {}
 
-  ngOnInit(): void {
-    this.events = [];
+  protected openModal(event?: IEvent): void {
+    if (event) {
+      this.selectedEvent = event;
+    }
+    this.showEventModal = true
   }
 
-  protected add() {
-    const event: IEvent = {
-      action: Action.SPAWN_ENTITY,
-      data: EntityType.TNT,
-      threshold: 0,
-    };
+  protected closeModal(): void {
+    this.showEventModal = false;
+    this.selectedEvent = undefined;
+  }
 
-    this.events.push(event);
+  protected saveEvent(event: IEvent): void {
+    const index: number = this.events.findIndex(e => e.id === event.id);
+
+    if (index !== -1) {
+      this.events[index] = event;
+    } else {
+      this.events.push(event);
+    }
+
     this.sortEvents();
+    this.toastr.success('Event successfully saved!');
+  }
+
+  protected deleteEvent(event: IEvent) {
+    this.events = this.events.filter((e: IEvent) => e !== event);
+  }
+
+  private sortEvents() {
+    this.events.sort((a: IEvent, b: IEvent) => a.threshold - b.threshold);
   }
 
   protected onFileSelected(event: any) {
+    //TODO: Redo file upload
     const file: File = event.target.files[0];
     let data;
 
@@ -69,20 +90,19 @@ export class ConfigComponent implements OnInit {
     document.body.removeChild(a);
   }
 
-  protected onDelete(event: IEvent) {
-    this.events = this.events.filter((e) => e !== event);
-  }
-
-  protected sortEvents() {
-    this.events.sort((a, b) => a.threshold - b.threshold);
-  }
-
   private isEvent(obj: any): obj is IEvent {
     return (
-      typeof obj.action == 'string' &&
-      Object.values(Action).includes(obj.action) &&
-      typeof obj.data == 'string' &&
-      typeof obj.threshold == 'number'
+      obj !== null &&
+      typeof obj === "object" &&
+      typeof obj.threshold === "number" &&
+      Array.isArray(obj.actions) &&
+      obj.actions.every(
+        (action: any) =>
+          typeof action === "object" &&
+          typeof action.action === "string" &&
+          Object.keys(ACTIONS).includes(action.action) &&
+          typeof action.data === "string"
+      )
     );
   }
 }

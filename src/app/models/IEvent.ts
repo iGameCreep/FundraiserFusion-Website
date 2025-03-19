@@ -1,7 +1,7 @@
-import {Action} from "./Action";
+import {IAction} from "./IAction";
 
 export interface IEvent {
-  action: Action;
-  data: string;
+  id: string;
   threshold: number;
+  actions: IAction[];
 }

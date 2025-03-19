@@ -1,0 +1,16 @@
+<div class="card">
+  <div class="card-header">
+    <h2 class="outfit no-margin">Event: {{ event.threshold }}$</h2>
+  </div>
+  <div class="card-content">
+    <h2 class="outfit">Actions</h2>
+
+    <div *ngFor="let action of event.actions; let i = index">
+      <h3 class="outfit description">Action {{ i+1 }}: {{ action.action }}</h3>
+      <h3 class="outfit description">Data: {{ action.data }}</h3>
+    </div>
+
+    <button class="btn btn-primary btn-edit" (click)="openModal()">Edit</button>
+    <button class="btn btn-danger btn-edit" (click)="removeEvent()">Remove</button>
+  </div>
+</div>

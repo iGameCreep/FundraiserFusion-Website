@@ -1,4 +1,4 @@
-import {IEvent} from "./IEvent";
+import {IAction} from "./IAction";
 
 export interface IConfig {
   tokens: {
@@ -7,5 +7,8 @@ export interface IConfig {
     expiresAt: number;
   }
 
-  events: IEvent[];
+  events: {
+    threshold: number;
+    actions: IAction[];
+  }[];
 }

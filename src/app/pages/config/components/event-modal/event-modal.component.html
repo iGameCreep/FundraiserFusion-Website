@@ -1,0 +1,53 @@
+<app-modal [title]="name" (onClose)="onClose.emit()">
+  <form class="form" [formGroup]="eventForm" (ngSubmit)="submitForm()">
+    <!-- Threshold -->
+    <label class="outfit no-margin" for="threshold">Threshold</label>
+    <input
+      class="input input-text"
+      [ngClass]="{'input-invalid': eventForm.get('threshold')?.invalid && eventForm.get('threshold')?.touched}"
+      (change)="updateName()"
+      id="threshold"
+      formControlName="threshold"
+      type="text"
+      required
+    >
+
+    <!-- Actions -->
+    <div formArrayName="actions">
+      <div *ngFor="let action of actions.controls; let i = index" [formGroupName]="i">
+
+        <!-- Action Dropdown -->
+        <select class="input dropdown" formControlName="action" (change)="updateChoices(i)">
+          <option *ngFor="let key of getAllActions()" [value]="key">
+            {{ getAction(key).label }}
+          </option>
+        </select>
+
+        <!-- Data Selection (Dropdown if Choices Exist) -->
+        <select *ngIf="getAction(action.get('action')?.value).choices.length > 0"
+                class="input dropdown"
+                formControlName="data">
+          <option *ngFor="let value of getAction(action.get('action')?.value).choices" [value]="value">
+            {{ value }}
+          </option>
+        </select>
+
+        <input *ngIf="getAction(action.get('action')?.value).choices.length === 0"
+               class="input input-text"
+               formControlName="data"
+               type="text"
+        >
+
+        <button class="outfit btn btn-danger" type="button" (click)="removeAction(i)" [disabled]="actions.length <= 1">
+          Remove
+        </button>
+      </div>
+
+      <p *ngIf="actions.length < 1" class="error-text">At least one action is required.</p>
+
+      <button class="outfit btn btn-primary" type="button" (click)="addAction()">Add Action</button>
+    </div>
+
+    <button class="outfit btn btn-success" type="submit" [disabled]="eventForm.invalid">Save</button>
+  </form>
+</app-modal>

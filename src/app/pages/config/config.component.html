@@ -11,10 +11,21 @@
     </button>
 </div>
 
+<app-event-modal
+  *ngIf="showEventModal"
+  [event]="selectedEvent"
+  (onSubmit)="saveEvent($event)"
+  (onClose)="closeModal()"
+></app-event-modal>
 
-<button class="btn btn-primary" (click)="add()">Register New Event</button>
+<button class="btn btn-primary" (click)="openModal()">Register New Event</button>
 <button class="btn btn-primary" (click)="generateConfig()">Generate Config File</button>
 
 <div class="container">
-    <app-event *ngFor="let event of events" [event]="event" (delete)="onDelete($event)" (sort)="sortEvents()"></app-event>
+    <app-event-card
+      *ngFor="let event of events"
+      [event]="event"
+      (onDelete)="deleteEvent($event)"
+      (onOpenModal)="openModal(event)"
+    ></app-event-card>
 </div>
