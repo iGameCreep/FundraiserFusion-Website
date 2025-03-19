@@ -25,7 +25,7 @@
     <app-event-card
       *ngFor="let event of events"
       [event]="event"
-      (onDelete)="deleteEvent($event)"
+      (onDelete)="deleteEvent(event)"
       (onOpenModal)="openModal(event)"
     ></app-event-card>
 </div>
