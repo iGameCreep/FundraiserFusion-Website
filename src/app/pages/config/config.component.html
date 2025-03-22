@@ -1,12 +1,16 @@
-<input type="file" class="file-input"
-       (change)="onFileSelected($event)" #fileUpload>
+<input type="file"
+       class="file-input"
+       accept="application/json"
+       (change)="onFileSelected($event)"
+       #fileUpload
+>
 
 <div class="file-upload">
-
    <h2>{{fileName || "No file uploaded yet."}}</h2>
 
     <button class="btn btn-primary"
       (click)="fileUpload.click()">
+      <i class="bi bi-upload"></i>
       Upload Config File
     </button>
 </div>

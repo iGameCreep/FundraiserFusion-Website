@@ -12,15 +12,15 @@ export enum EAction {
 }
 
 export const ACTIONS: Record<EAction, { label: string; choices: string[] }> = {
-  SPAWN_ENTITY: {
+  [EAction.SPAWN_ENTITY]: {
     label: "Spawn Entity",
     choices: Object.values(EntityType)
   },
-  SET_WEATHER: {
+  [EAction.SET_WEATHER]: {
     label: "Set Weather",
     choices: ["Rain", "Clear", "Storm"]
   },
-  COMMAND_EXEC: {
+  [EAction.COMMAND_EXEC]: {
     label: "Run Command",
     choices: []
   }

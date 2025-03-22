@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {IEvent} from 'src/app/models/IEvent';
 import {ACTIONS} from "../../models/IAction";
+import {IConfigFile} from "../../models/external/IConfigFile";
 
 @Component({
   selector: 'app-config',
@@ -43,45 +44,54 @@ export class ConfigComponent {
     this.toastr.success('Event successfully saved!');
   }
 
-  protected deleteEvent(event: IEvent) {
+  protected deleteEvent(event: IEvent): void {
     this.events = this.events.filter((e: IEvent) => e !== event);
   }
 
-  private sortEvents() {
+  private sortEvents(): void {
     this.events.sort((a: IEvent, b: IEvent) => a.threshold - b.threshold);
   }
 
-  protected onFileSelected(event: any) {
-    //TODO: Redo file upload
+  protected onFileSelected(event: any): void {
     const file: File = event.target.files[0];
-    let data;
+    if (!file) return;
 
-    file.text().then((text) => {
-      try {
+    try {
+      file.text().then((text: string) => {
+        let data: IConfigFile;
         data = JSON.parse(text);
-        if (Array.isArray(data)) {
-          for (let event of data) {
+        const events = data.events;
+        if (events && Array.isArray(event)) {
+          for (let event of events) {
             if (!this.isEvent(event)) {
-              throw new Error('Not correct json file.');
+              this.showFileError();
             }
           }
         }
-      } catch (err: any) {
-        this.toastr.error("Config file malformed of currupted.", "Unable to load file");
-        return;
-      }
 
-      this.fileName = file.name;
-      this.events = data;
-    });
+        this.fileName = file.name;
+        this.events = events;
+      });
+    } catch (err: any) {
+      this.showFileError();
+      console.error(err);
+      return;
+    }
   }
 
-  protected generateConfig() {
-    const blob = new Blob([JSON.stringify(this.events)], {
+  private showFileError(): void {
+    this.toastr.error("Config file malformed of currupted.", "Unable to load file");
+  }
+
+  protected generateConfig(): void {
+    const configFile: IConfigFile = {
+      events: this.events,
+    }
+    const blob = new Blob([JSON.stringify(configFile)], {
       type: 'text/plain',
     });
-    const url = window.URL.createObjectURL(blob);
 
+    const url: string = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'config.json';
