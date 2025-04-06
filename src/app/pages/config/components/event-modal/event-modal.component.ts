@@ -1,8 +1,19 @@
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {IEvent} from "../../../../models/IEvent";
 import {ACTIONS, EAction, IAction} from "../../../../models/IAction";
+import {
+  EStreamLabsEventFor,
+  EStreamLabsEventType,
+  getEventLabel,
+  streamlabs_events, StreamLabsEvent
+} from "../../../../models/external/streamlabs/StreamLabsEvents";
+
+type EventOption = {
+  value: string,
+  label: string
+}
 
 @Component({
   selector: 'app-event-modal',
@@ -10,27 +21,43 @@ import {ACTIONS, EAction, IAction} from "../../../../models/IAction";
   styleUrl: './event-modal.component.scss',
   standalone: false,
 })
-export class EventModalComponent implements OnInit {
+export class EventModalComponent {
   @Input() event!: IEvent | undefined;
   @Output() onClose: EventEmitter<any> = new EventEmitter();
   @Output() onSubmit: EventEmitter<IEvent> = new EventEmitter();
 
+  private readonly SEPARATOR: string = ':';
+
   protected name!: string;
+  protected isDonation: boolean = false;
   protected eventForm!: FormGroup;
+  protected eventsOptions: EventOption[];
 
-  constructor(private readonly fb: FormBuilder,
-              private readonly toastr: ToastrService) {}
+  protected givenEventType: EStreamLabsEventType;
+  protected givenEventFor: EStreamLabsEventFor;
 
-  ngOnInit(): void {
-    this.name = `Event - ${this.event?.threshold ?? 0}$`;
+  constructor(private readonly fb: FormBuilder, private readonly toastr: ToastrService) {
+    this.givenEventType = this.event?.eventData?.eventType ?? EStreamLabsEventType.FOLLOW;
+    this.givenEventFor = this.event?.eventData?.eventFor ?? EStreamLabsEventFor.TWITCH_ACCOUNT;
+
+    this.eventsOptions = streamlabs_events.map(event => ({
+      value: event.eventType + this.SEPARATOR + event.eventFor,
+      label: event.event
+    }));
+
+    this.name = getEventLabel(this.givenEventType, this.givenEventFor);
 
     this.eventForm = this.fb.group({
-      threshold: [this.event?.threshold ?? 0, [Validators.required, Validators.min(0)]],
+      threshold: [this.event?.threshold ?? undefined, [Validators.min(0)]],
+      eventData: [
+        this.givenEventType + this.SEPARATOR + this.givenEventFor,
+        Validators.required
+      ],
       actions: this.fb.array([]),
     });
 
     if (this.event?.actions?.length) {
-      this.event.actions.forEach((action, i) => {
+      this.event.actions.forEach((action: IAction) => {
         const formGroup = this.createAction(action);
         this.actions.push(formGroup);
       });
@@ -44,9 +71,10 @@ export class EventModalComponent implements OnInit {
   }
 
   protected updateName(): void {
-    const thresholdControl = this.eventForm.get('threshold');
-    thresholdControl?.valueChanges.subscribe((newAmount: number) => {
-      this.name = `Event - ${newAmount ?? 0}$`;
+    this.eventForm.get('eventData')?.valueChanges.subscribe((newData: string) => {
+      const data: StreamLabsEvent = this.getDataFromEventString(newData);
+      this.name = getEventLabel(data.eventType, data.eventFor);
+      this.isDonation = (data.eventType === EStreamLabsEventType.DONATION);
     });
   }
 
@@ -60,12 +88,16 @@ export class EventModalComponent implements OnInit {
     });
   }
 
+  get eventType(): FormGroup {
+    return this.eventForm.get('eventData') as FormGroup;
+  }
+
   get actions(): FormArray {
     return this.eventForm.get('actions') as FormArray;
   }
 
   private createAction(action?: IAction): FormGroup {
-    const selectedAction = action?.action ?? "SPAWN_ENTITY";
+    const selectedAction = action?.action ?? EAction.SPAWN_ENTITY;
     return this.fb.group({
       action: [selectedAction, Validators.required],
       data: [action?.data ?? '', Validators.required],
@@ -91,15 +123,34 @@ export class EventModalComponent implements OnInit {
       return;
     }
 
-    const { threshold, actions } = this.eventForm.value;
+    const { threshold, eventData, actions } = this.eventForm.value;
     const newEvent: IEvent = {
       id: this.event?.id ??  crypto.randomUUID(),
       threshold,
+      eventData: this.getDataFromEventString(eventData),
       actions
     };
 
     this.onSubmit.emit(newEvent);
     this.onClose.emit();
+  }
+
+  private getDataFromEventString(eventString: string): StreamLabsEvent {
+    try {
+      const parts: string[] = eventString.split(this.SEPARATOR);
+
+      return {
+        eventType: parts[0] as EStreamLabsEventType,
+        eventFor: parts[1] as EStreamLabsEventFor,
+      };
+    } catch (err) {
+      this.toastr.error(`Unable to find event: ${err}`);
+      console.error(err);
+      return {
+        eventType: EStreamLabsEventType.FOLLOW,
+        eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT,
+      }
+    }
   }
 
   protected getAllActions(): string[] {

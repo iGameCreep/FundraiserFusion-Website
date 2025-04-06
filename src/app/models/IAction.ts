@@ -1,4 +1,4 @@
-import {EntityType} from "./EntityType";
+import {EMinecraftEntityType} from "./external/minecraft/EMinecraftEntityType";
 
 export interface IAction {
   action: EAction;
@@ -14,7 +14,7 @@ export enum EAction {
 export const ACTIONS: Record<EAction, { label: string; choices: string[] }> = {
   [EAction.SPAWN_ENTITY]: {
     label: "Spawn Entity",
-    choices: Object.values(EntityType)
+    choices: Object.values(EMinecraftEntityType)
   },
   [EAction.SET_WEATHER]: {
     label: "Set Weather",

@@ -1,6 +1,9 @@
 <div class="card">
   <div class="card-header">
-    <h2 class="outfit no-margin">Event: {{ event.threshold }}$</h2>
+    <h2 class="outfit no-margin">
+      {{ title }}
+      <ng-container *ngIf="event.threshold">${{ event.threshold }}</ng-container>
+    </h2>
   </div>
   <div class="card-content">
     <h2 class="outfit">Actions</h2>

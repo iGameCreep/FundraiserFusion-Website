@@ -1,16 +1,26 @@
 <app-modal [title]="name" (onClose)="onClose.emit()">
   <form class="form" [formGroup]="eventForm" (ngSubmit)="submitForm()">
-    <!-- Threshold -->
-    <label class="outfit no-margin" for="threshold">Threshold</label>
-    <input
-      class="input input-text"
-      [ngClass]="{'input-invalid': eventForm.get('threshold')?.invalid && eventForm.get('threshold')?.touched}"
-      (change)="updateName()"
-      id="threshold"
-      formControlName="threshold"
-      type="text"
-      required
-    >
+    <!-- Combined Event (eventType + eventFor) -->
+    <label class="outfit" for="event">Event</label>
+    <select class="input dropdown" id="event" formControlName="eventData">
+      <option *ngFor="let event of eventsOptions" [ngValue]="event.value">
+        {{ event.label }}
+      </option>
+    </select>
+
+    <ng-container *ngIf="isDonation">
+      <!-- Donation Threshold -->
+      <label class="outfit" for="threshold">Donation Threshold</label>
+      <input
+        class="input input-text"
+        [ngClass]="{'input-invalid': eventForm.get('threshold')?.invalid && eventForm.get('threshold')?.touched}"
+        (change)="updateName()"
+        id="threshold"
+        formControlName="threshold"
+        type="text"
+        required
+      >
+    </ng-container>
 
     <!-- Actions -->
     <div formArrayName="actions">

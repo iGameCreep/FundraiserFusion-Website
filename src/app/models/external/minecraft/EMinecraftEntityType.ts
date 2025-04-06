@@ -1,4 +1,4 @@
-export enum EntityType {
+export enum EMinecraftEntityType {
   ITEM = 'item',
   EXPERIENCE_ORB = 'experience_orb',
   AREA_EFFECT_CLOUD = 'area_effect_cloud',

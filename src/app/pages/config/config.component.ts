@@ -2,7 +2,8 @@ import {Component} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
 import {IEvent} from 'src/app/models/IEvent';
 import {ACTIONS} from "../../models/IAction";
-import {IConfigFile} from "../../models/external/IConfigFile";
+import {FILE_VERSION, IConfigFile} from "../../models/external/plugin/IConfigFile";
+import {EStreamLabsEventFor, EStreamLabsEventType} from "../../models/external/streamlabs/StreamLabsEvents";
 
 @Component({
   selector: 'app-config',
@@ -17,7 +18,7 @@ export class ConfigComponent {
   protected events: IEvent[] = [];
   protected fileName!: string;
 
-  constructor(private toastr: ToastrService) {}
+  constructor(private readonly toastr: ToastrService) {}
 
   protected openModal(event?: IEvent): void {
     if (event) {
@@ -49,29 +50,27 @@ export class ConfigComponent {
   }
 
   private sortEvents(): void {
-    this.events.sort((a: IEvent, b: IEvent) => a.threshold - b.threshold);
+    this.events.sort((a: IEvent, b: IEvent) => (a.threshold ?? 0) - (b.threshold ?? 0));
   }
 
-  protected onFileSelected(event: any): void {
+  protected async onFileSelected(event: any): Promise<void> {
     const file: File = event.target.files[0];
     if (!file) return;
 
     try {
-      file.text().then((text: string) => {
-        let data: IConfigFile;
-        data = JSON.parse(text);
-        const events = data.events;
-        if (events && Array.isArray(event)) {
-          for (let event of events) {
-            if (!this.isEvent(event)) {
-              this.showFileError();
-            }
+      const text: string = await file.text();
+      let data: IConfigFile = JSON.parse(text);
+      const events: IEvent[] = data.events;
+      if (events && Array.isArray(event)) {
+        for (let event of events) {
+          if (!this.isEvent(event)) {
+            this.showFileError();
           }
         }
+      }
 
-        this.fileName = file.name;
-        this.events = events;
-      });
+      this.fileName = file.name;
+      this.events = events;
     } catch (err: any) {
       this.showFileError();
       console.error(err);
@@ -85,6 +84,7 @@ export class ConfigComponent {
 
   protected generateConfig(): void {
     const configFile: IConfigFile = {
+      fileVersion: FILE_VERSION,
       events: this.events,
     }
     const blob = new Blob([JSON.stringify(configFile)], {
@@ -105,6 +105,12 @@ export class ConfigComponent {
       obj !== null &&
       typeof obj === "object" &&
       typeof obj.threshold === "number" &&
+      typeof obj.id === "string" &&
+      typeof obj.eventType === "object" &&
+      typeof obj.eventType.eventType === "string" &&
+      Object.values(EStreamLabsEventType).includes(obj.eventType.eventType) &&
+      typeof obj.eventType.eventFor === "string" &&
+      Object.values(EStreamLabsEventFor).includes(obj.eventType.eventFor) &&
       Array.isArray(obj.actions) &&
       obj.actions.every(
         (action: any) =>
