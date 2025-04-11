@@ -128,7 +128,12 @@ export class EventModalComponent {
       id: this.event?.id ??  crypto.randomUUID(),
       threshold,
       eventData: this.getDataFromEventString(eventData),
-      actions
+      actions: actions.map((a: IAction) => {
+        return {
+          action: a.action,
+          data: a.data,
+        }
+      })
     };
 
     this.onSubmit.emit(newEvent);

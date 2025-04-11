@@ -90,10 +90,8 @@ export class ConfigComponent {
     const blob = new Blob([JSON.stringify(configFile)], {
       type: 'text/plain',
     });
-
-    const url: string = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
+    a.href = window.URL.createObjectURL(blob);
     a.download = 'config.json';
     document.body.appendChild(a);
     a.click();
