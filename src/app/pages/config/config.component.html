@@ -26,8 +26,22 @@
 <button class="btn btn-primary" (click)="generateConfig()">Generate Config File</button>
 
 <div class="container">
+  <form class="form" [formGroup]="configForm">
+    <h2 class="outfit title">General Settings</h2>
+
+    <label class="outfit" for="cumulate">Cumulate donation events</label>
+    <input
+      id="cumulate"
+      type="checkbox"
+      class="input checkbox"
+      formControlName="cumulateDonationEvents"
+    >
+  </form>
+</div>
+
+<div class="container">
     <app-event-card
-      *ngFor="let event of events"
+      *ngFor="let event of configFile.events"
       [event]="event"
       (onDelete)="deleteEvent(event)"
       (onOpenModal)="openModal(event)"

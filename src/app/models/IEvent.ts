@@ -3,7 +3,7 @@ import {StreamLabsEvent} from "./external/streamlabs/StreamLabsEvents";
 
 export interface IEvent {
   id: string;
-  threshold?: number;
+  donationThreshold: number | null;
   eventData: StreamLabsEvent;
   actions: IAction[];
 }

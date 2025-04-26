@@ -36,7 +36,8 @@ export class EventModalComponent {
   protected givenEventType: EStreamLabsEventType;
   protected givenEventFor: EStreamLabsEventFor;
 
-  constructor(private readonly fb: FormBuilder, private readonly toastr: ToastrService) {
+  constructor(private readonly fb: FormBuilder,
+              private readonly toastr: ToastrService) {
     this.givenEventType = this.event?.eventData?.eventType ?? EStreamLabsEventType.FOLLOW;
     this.givenEventFor = this.event?.eventData?.eventFor ?? EStreamLabsEventFor.TWITCH_ACCOUNT;
 
@@ -48,7 +49,7 @@ export class EventModalComponent {
     this.name = getEventLabel(this.givenEventType, this.givenEventFor);
 
     this.eventForm = this.fb.group({
-      threshold: [this.event?.threshold ?? undefined, [Validators.min(0)]],
+      donationThreshold: [this.event?.donationThreshold ?? null, [Validators.min(0)]],
       eventData: [
         this.givenEventType + this.SEPARATOR + this.givenEventFor,
         Validators.required
@@ -123,10 +124,10 @@ export class EventModalComponent {
       return;
     }
 
-    const { threshold, eventData, actions } = this.eventForm.value;
+    const { donationThreshold, eventData, actions } = this.eventForm.value;
     const newEvent: IEvent = {
       id: this.event?.id ??  crypto.randomUUID(),
-      threshold,
+      donationThreshold,
       eventData: this.getDataFromEventString(eventData),
       actions: actions.map((a: IAction) => {
         return {

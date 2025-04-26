@@ -4,5 +4,8 @@ export const FILE_VERSION: number = 1;
 
 export interface IConfigFile {
   fileVersion: number;
+  settings: {
+    cumulateDonationEvents: boolean;
+  }
   events: IEvent[];
 }
