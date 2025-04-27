@@ -4,17 +4,17 @@ export enum EStreamLabsEventType {
   DONATION = "donation",
   FOLLOW = "follow",
   SUBSCRIPTION = "subscription",
-  HOST = "host",
   BITS = "bits",
-  RAIDS = "raids",
+  RAID = "raid",
+  TWITCH_CHARITY_DONATION = "twitchcharitydonation",
   SUPERCHAT = "superchat",
+  MEMBERSHIP_GIFT = "membershipGift"
 }
 
 export enum EStreamLabsEventFor {
   STREAMLABS = "streamlabs",
   TWITCH_ACCOUNT = "twitch_account",
   YOUTUBE_ACCOUNT = "youtube_account",
-  MIXER_ACCOUNT = "mixer_account",
 }
 
 export type EventEntry = {
@@ -29,18 +29,18 @@ export type StreamLabsEvent = {
 }
 
 export const streamlabs_events: EventEntry[] = [
-  { eventType: EStreamLabsEventType.DONATION, eventFor: EStreamLabsEventFor.STREAMLABS, event: "Donations" },
-  { eventType: EStreamLabsEventType.FOLLOW, eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, event: "Twitch Follow" },
-  { eventType: EStreamLabsEventType.SUBSCRIPTION, eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, event: "Twitch Subscription" },
-  { eventType: EStreamLabsEventType.HOST, eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, event: "Twitch Host" },
-  { eventType: EStreamLabsEventType.BITS, eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, event: "Twitch Bits" },
-  { eventType: EStreamLabsEventType.RAIDS, eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, event: "Twitch Raids" },
-  { eventType: EStreamLabsEventType.FOLLOW, eventFor: EStreamLabsEventFor.YOUTUBE_ACCOUNT, event: "YouTube Subscription" },
-  { eventType: EStreamLabsEventType.SUBSCRIPTION, eventFor: EStreamLabsEventFor.YOUTUBE_ACCOUNT, event: "YouTube Subscriber" },
-  { eventType: EStreamLabsEventType.SUPERCHAT, eventFor: EStreamLabsEventFor.YOUTUBE_ACCOUNT, event: "YouTube Superchats" },
-  { eventType: EStreamLabsEventType.FOLLOW, eventFor: EStreamLabsEventFor.MIXER_ACCOUNT, event: "Mixer Follow" },
-  { eventType: EStreamLabsEventType.SUBSCRIPTION, eventFor: EStreamLabsEventFor.MIXER_ACCOUNT, event: "Mixer Subscription" },
-  { eventType: EStreamLabsEventType.HOST, eventFor: EStreamLabsEventFor.MIXER_ACCOUNT, event: "Mixer Host" },
+  { eventFor: EStreamLabsEventFor.STREAMLABS, eventType: EStreamLabsEventType.DONATION, event: "Donations" },
+
+  { eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, eventType: EStreamLabsEventType.FOLLOW, event: "Twitch Follow" },
+  { eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, eventType: EStreamLabsEventType.SUBSCRIPTION, event: "Twitch Subscription" },
+  { eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, eventType: EStreamLabsEventType.BITS, event: "Twitch Bits" },
+  { eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, eventType: EStreamLabsEventType.RAID, event: "Twitch Raid" },
+  { eventFor: EStreamLabsEventFor.TWITCH_ACCOUNT, eventType: EStreamLabsEventType.TWITCH_CHARITY_DONATION, event: "Twitch Charity Donation" },
+
+  { eventFor: EStreamLabsEventFor.YOUTUBE_ACCOUNT, eventType: EStreamLabsEventType.FOLLOW, event: "YouTube Subscription" },
+  { eventFor: EStreamLabsEventFor.YOUTUBE_ACCOUNT, eventType: EStreamLabsEventType.SUBSCRIPTION, event: "YouTube Subscriber" },
+  { eventFor: EStreamLabsEventFor.YOUTUBE_ACCOUNT, eventType: EStreamLabsEventType.SUPERCHAT, event: "YouTube Superchats" },
+  { eventFor: EStreamLabsEventFor.YOUTUBE_ACCOUNT, eventType: EStreamLabsEventType.MEMBERSHIP_GIFT, event: "YouTube Membership Gift" },
 ];
 
 export function getEventLabel(eventType: EStreamLabsEventType, eventFor: EStreamLabsEventFor): string {
