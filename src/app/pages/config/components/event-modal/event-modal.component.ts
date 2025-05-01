@@ -7,7 +7,8 @@ import {
   EStreamLabsEventFor,
   EStreamLabsEventType,
   getEventLabel,
-  streamlabs_events, StreamLabsEvent
+  streamlabs_events,
+  StreamLabsEvent
 } from "../../../../models/external/streamlabs/StreamLabsEvents";
 
 type EventOption = {
@@ -98,7 +99,7 @@ export class EventModalComponent {
   }
 
   private createAction(action?: IAction): FormGroup {
-    const selectedAction = action?.action ?? EAction.SPAWN_ENTITY;
+    const selectedAction = action?.action ?? EAction.COMMAND_EXEC;
     return this.fb.group({
       action: [selectedAction, Validators.required],
       data: [action?.data ?? '', Validators.required],
@@ -132,13 +133,21 @@ export class EventModalComponent {
       actions: actions.map((a: IAction) => {
         return {
           action: a.action,
-          data: a.data,
+          data: this.getActionDataFromValue(a.action, a.data),
         }
       })
     };
 
     this.onSubmit.emit(newEvent);
     this.onClose.emit();
+  }
+
+  private getActionDataFromValue(action: EAction, value: string): string {
+    console.log(action == EAction.COMMAND_EXEC)
+    if (action == EAction.COMMAND_EXEC) {
+      return JSON.stringify({ command: value });
+    }
+    return JSON.stringify({});
   }
 
   private getDataFromEventString(eventString: string): StreamLabsEvent {

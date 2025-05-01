@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from 'ngx-toastr';
 import {IEvent} from 'src/app/models/IEvent';
-import {ACTIONS} from "../../models/IAction";
+import {EAction} from "../../models/IAction";
 import {FILE_VERSION, IConfigFile} from "../../models/external/plugin/IConfigFile";
 import {EStreamLabsEventFor, EStreamLabsEventType} from "../../models/external/streamlabs/StreamLabsEvents";
 
@@ -158,19 +158,19 @@ export class ConfigComponent {
     return (
       obj !== null &&
       typeof obj === "object" &&
-      typeof obj.threshold === "number" &&
       typeof obj.id === "string" &&
-      typeof obj.eventType === "object" &&
-      typeof obj.eventType.eventType === "string" &&
-      Object.values(EStreamLabsEventType).includes(obj.eventType.eventType) &&
-      typeof obj.eventType.eventFor === "string" &&
-      Object.values(EStreamLabsEventFor).includes(obj.eventType.eventFor) &&
+      (typeof obj.donationThreshold === "number" || obj.donationThreshold === null) &&
+      typeof obj.eventData === "object" &&
+      typeof obj.eventData.eventType === "string" &&
+      Object.values(EStreamLabsEventType).includes(obj.eventData.eventType) &&
+      typeof obj.eventData.eventFor === "string" &&
+      Object.values(EStreamLabsEventFor).includes(obj.eventData.eventFor) &&
       Array.isArray(obj.actions) &&
       obj.actions.every(
         (action: any) =>
           typeof action === "object" &&
           typeof action.action === "string" &&
-          Object.keys(ACTIONS).includes(action.action) &&
+          Object.values(EAction).includes(action.action) &&
           typeof action.data === "string"
       )
     );
