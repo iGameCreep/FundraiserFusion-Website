@@ -51,25 +51,18 @@ exports.handler = async (event, context) => {
         };
       }
 
-      const body = {
-        grant_type: 'authorization_code',
-        client_id: ENV.STREAMLABS_APP_ID,
-        client_secret: ENV.STREAMLABS_APP_SECRET,
-        redirect_uri: ENV.STREAMLABS_REDIRECT_URI,
-        code: code
-      }
+      const accessData = await getAccessToken(code);
+      const accessToken = accessData.access_token;
 
-      const res = await axios.post(`https://streamlabs.com/api/v2.0/token`, body, {headers});
-      const data = res.data;
+      const socketData = await getSocketToken(accessToken);
+
       return {
         statusCode: 200,
         headers: headers,
         body: JSON.stringify({
           success: true,
           data: {
-            access_token: data.access_token,
-            refresh_token: data.refresh_token,
-            expires_in: data.expires_in,
+            socket_token: socketData.socket_token,
           }
         })
       }
@@ -94,4 +87,27 @@ exports.handler = async (event, context) => {
       message: "Method not allowed",
     }),
   };
+}
+
+async function getAccessToken(code) {
+  const body = {
+    grant_type: 'authorization_code',
+    client_id: ENV.STREAMLABS_APP_ID,
+    client_secret: ENV.STREAMLABS_APP_SECRET,
+    redirect_uri: ENV.STREAMLABS_REDIRECT_URI,
+    code: code
+  }
+
+  const res = await axios.post(`https://streamlabs.com/api/v2.0/token`, body, {headers});
+  return res.data;
+}
+
+async function getSocketToken(accessToken) {
+  const res = await axios.get(`https://streamlabs.com/api/v2.0/socket/token`, {
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${accessToken}`,
+    }
+  });
+  return res.data;
 }

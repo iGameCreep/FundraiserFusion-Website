@@ -3,8 +3,8 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {IApiResponse} from "../../models/api/IApiResponse";
-import {ITokenData} from 'src/app/models/api/ITokenData';
 import {StreamLabsService} from 'src/app/services/streamlabs.service';
+import {ISocketToken} from "../../models/api/ISocketToken";
 
 @Component({
   selector: 'app-auth',
@@ -13,8 +13,7 @@ import {StreamLabsService} from 'src/app/services/streamlabs.service';
   standalone: false,
 })
 export class AuthComponent implements OnInit {
-  data: ITokenData | null = null;
-  expiresOn!: Date;
+  socketData: ISocketToken | null = null;
 
   constructor(
     private readonly router: Router,
@@ -31,17 +30,15 @@ export class AuthComponent implements OnInit {
         return;
       }
 
-      this.streamlabsService.getTokenFromCode(code)
+      this.streamlabsService.getSocketTokenFromCode(code)
       .subscribe({
-        next: (res: IApiResponse<ITokenData>) => {
+        next: (res: IApiResponse<ISocketToken>) => {
           if (!res.success) {
             this.toastr.error(res.error ?? res.message ?? "Unknown Error");
             return;
           }
 
-          const data: ITokenData = res.data;
-          this.data = res.data;
-          this.expiresOn = new Date(Date.now() + data.expires_in);
+          this.socketData = res.data;
         },
         error: (err: HttpErrorResponse) => {
           console.error(err.message);
@@ -51,42 +48,20 @@ export class AuthComponent implements OnInit {
     });
   }
 
-  copyAccessToken(): void {
-    if (this.data?.access_token) {
-      void navigator.clipboard.writeText(this.data.access_token);
-      this.clipboardSuccess('access');
+  copySocketToken(): void {
+    if (this.socketData?.socket_token) {
+      void navigator.clipboard.writeText(this.socketData.socket_token);
+      this.toastr.success(
+        `Successfully copied socket token to clipboard !`,
+        'Success !'
+      );
     } else {
-      this.clipboardError('access');
+      this.toastr.error(`Unable to copy socket token to clipboard.`, 'Error');
     }
-  }
-
-  copyRefreshToken(): void {
-    if (this.data?.refresh_token) {
-      void navigator.clipboard.writeText(this.data.refresh_token);
-      this.clipboardSuccess('refresh');
-    } else {
-      this.clipboardError('refresh');
-    }
-  }
-
-  private clipboardSuccess(type: 'access' | 'refresh') {
-    this.toastr.success(
-      `Successfully copied ${type} token to clipboard !`,
-      'Success !'
-    );
-  }
-
-  private clipboardError(type: 'access' | 'refresh') {
-    this.toastr.error(`Unable to copy ${type} token to clipboard.`, 'Error');
   }
 
   protected generateSecretsFile(): void {
-    const newData = {
-      ...this.data,
-      expires_on: this.expiresOn,
-    }
-
-    const blob = new Blob([JSON.stringify(newData)], { type: 'text/plain' });
+    const blob = new Blob([JSON.stringify(this.socketData)], { type: 'text/plain' });
     const url: string = window.URL.createObjectURL(blob);
 
     const a: HTMLAnchorElement = document.createElement('a');

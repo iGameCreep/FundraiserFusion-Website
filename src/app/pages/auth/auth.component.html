@@ -1,15 +1,11 @@
 <section class="page">
-  <div *ngIf="!data">
+  <div *ngIf="!socketData">
     <h1 class="outfit title">Retrieving informations, Please wait...</h1>
   </div>
-  <div *ngIf="data" class="card">
+  <div *ngIf="socketData" class="card">
     <h1 class="outfit title">Success !</h1>
 
-    <button (click)="copyAccessToken()" class="btn btn-primary">Copy Access Token</button>
-    <button (click)="copyRefreshToken()" class="btn btn-primary">Copy Refresh Token</button>
-
-    <h2 class="outfit">Expires On</h2>
-    <p class="outfit">{{ expiresOn | date : "long" }}</p>
+    <button (click)="copySocketToken()" class="btn btn-primary">Copy Socket Token</button>
 
     <button (click)="generateSecretsFile()" class="btn btn-success">Generate Secrets File</button>
   </div>
