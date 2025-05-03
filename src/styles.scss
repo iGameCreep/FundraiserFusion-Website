@@ -1,7 +1,7 @@
 @use "ngx-toastr/toastr";
+@use "forms";
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 @import 'bootstrap-icons/font/bootstrap-icons.min.css';
-@import "forms";
 
 :root {
   --primary-color: #2cafff;
@@ -60,6 +60,7 @@ body {
   font-family: "Outfit", sans-serif;
   font-weight: bold;
   font-size: larger;
+  text-decoration: none;
 
   &:focus-visible {
     outline-color: var(--primary-color);

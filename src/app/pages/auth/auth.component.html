@@ -4,9 +4,9 @@
   </div>
   <div *ngIf="socketData" class="card">
     <h1 class="outfit title">Success !</h1>
+    <h3 class="outfit">To setup the notifications in your plugin, simply copy and run this command in your Minecraft server (make sure you have the correct permissions!)</h3>
 
-    <button (click)="copySocketToken()" class="btn btn-primary">Copy Socket Token</button>
-
-    <button (click)="generateSecretsFile()" class="btn btn-success">Generate Secrets File</button>
+    <button (click)="copySocketToken()" class="btn btn-primary">Copy Command</button>
+    <a routerLink="/config" class="btn btn-primary">Configure the plugin</a>
   </div>
 </section>

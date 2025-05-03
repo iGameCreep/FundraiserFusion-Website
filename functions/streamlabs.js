@@ -19,7 +19,7 @@ streamlabs_app_url.searchParams.set('client_id', ENV.STREAMLABS_APP_ID);
 streamlabs_app_url.searchParams.set('redirect_uri', ENV.STREAMLABS_REDIRECT_URI);
 streamlabs_app_url.searchParams.set('scope', ENV.STREAMLABS_APP_SCOPES.join('+'));
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,

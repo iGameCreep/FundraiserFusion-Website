@@ -48,27 +48,19 @@ export class AuthComponent implements OnInit {
     });
   }
 
-  copySocketToken(): void {
+  protected copySocketToken(): void {
     if (this.socketData?.socket_token) {
-      void navigator.clipboard.writeText(this.socketData.socket_token);
+      void navigator.clipboard.writeText(this.getMinecraftCommand());
       this.toastr.success(
-        `Successfully copied socket token to clipboard !`,
+        `Successfully copied command to clipboard !`,
         'Success !'
       );
     } else {
-      this.toastr.error(`Unable to copy socket token to clipboard.`, 'Error');
+      this.toastr.error(`Unable to copy command to clipboard.`, 'Error');
     }
   }
 
-  protected generateSecretsFile(): void {
-    const blob = new Blob([JSON.stringify(this.socketData)], { type: 'text/plain' });
-    const url: string = window.URL.createObjectURL(blob);
-
-    const a: HTMLAnchorElement = document.createElement('a');
-    a.href = url;
-    a.download = 'secrets.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  private getMinecraftCommand(): string {
+    return `/token ${this.socketData?.socket_token}`;
   }
 }
