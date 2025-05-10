@@ -8,9 +8,11 @@
   <div class="card-content">
     <h2 class="outfit">Actions</h2>
 
-    <div *ngFor="let action of event.actions; let i = index">
-      <h3 class="outfit description">Action {{ i+1 }}: {{ action.action }}</h3>
-      <h3 class="outfit description">Data: {{ action.data }}</h3>
+    <div class="actions-list">
+      <div *ngFor="let action of event.actions; let i = index">
+        <h3 class="outfit description">Action {{ i + 1 }}: {{ action.action }}</h3>
+        <h3 class="outfit description">Command: {{ getActionCommand(action.data) }}</h3>
+      </div>
     </div>
 
     <button class="btn btn-primary btn-edit" (click)="openModal()">Edit</button>

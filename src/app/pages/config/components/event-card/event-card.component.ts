@@ -30,4 +30,13 @@ export class EventCardComponent implements OnInit {
     this.onDelete.emit(this.event);
     this.toastr.success("Removed event", "Success !");
   }
+
+  protected getActionCommand(data: string): string {
+    try {
+      const parsed = JSON.parse(data);
+      return parsed.command || 'No command';
+    } catch {
+      return 'Invalid data';
+    }
+  }
 }

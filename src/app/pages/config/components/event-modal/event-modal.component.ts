@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from "@angular/core";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ToastrService} from "ngx-toastr";
 import {IEvent} from "../../../../models/IEvent";
@@ -10,6 +10,7 @@ import {
   streamlabs_events,
   StreamLabsEvent
 } from "../../../../models/external/streamlabs/StreamLabsEvents";
+import { Subject, takeUntil } from "rxjs";
 
 type EventOption = {
   value: string,
@@ -22,23 +23,27 @@ type EventOption = {
   styleUrl: './event-modal.component.scss',
   standalone: false,
 })
-export class EventModalComponent {
+export class EventModalComponent implements OnInit, OnDestroy {
   @Input() event!: IEvent | undefined;
   @Output() onClose: EventEmitter<any> = new EventEmitter();
   @Output() onSubmit: EventEmitter<IEvent> = new EventEmitter();
+
+  private destroyed$: Subject<void> = new Subject<void>();
 
   private readonly SEPARATOR: string = ':';
 
   protected name!: string;
   protected isDonation: boolean = false;
   protected eventForm!: FormGroup;
-  protected eventsOptions: EventOption[];
+  protected eventsOptions!: EventOption[];
 
-  protected givenEventType: EStreamLabsEventType;
-  protected givenEventFor: EStreamLabsEventFor;
+  protected givenEventType!: EStreamLabsEventType;
+  protected givenEventFor!: EStreamLabsEventFor;
 
   constructor(private readonly fb: FormBuilder,
-              private readonly toastr: ToastrService) {
+              private readonly toastr: ToastrService) { }
+
+  public ngOnInit(): void {
     this.givenEventType = this.event?.eventData?.eventType ?? EStreamLabsEventType.FOLLOW;
     this.givenEventFor = this.event?.eventData?.eventFor ?? EStreamLabsEventFor.TWITCH_ACCOUNT;
 
@@ -69,15 +74,20 @@ export class EventModalComponent {
       this.actions.push(this.createAction());
     }
 
-    this.updateName();
+    this.eventForm.get('eventData')?.valueChanges
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((newData: string) => this.handleEventChange(newData));
   }
 
-  protected updateName(): void {
-    this.eventForm.get('eventData')?.valueChanges.subscribe((newData: string) => {
-      const data: StreamLabsEvent = this.getDataFromEventString(newData);
-      this.name = getEventLabel(data.eventType, data.eventFor);
-      this.isDonation = (data.eventType === EStreamLabsEventType.DONATION);
-    });
+  public ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
+  }
+
+  private handleEventChange(newData: string): void {
+    const data = this.getDataFromEventString(newData);
+    this.name = getEventLabel(data.eventType, data.eventFor);
+    this.isDonation = (data.eventType === EStreamLabsEventType.DONATION);
   }
 
   protected updateChoices(index: number): void {
@@ -99,10 +109,20 @@ export class EventModalComponent {
   }
 
   private createAction(action?: IAction): FormGroup {
-    const selectedAction = action?.action ?? EAction.COMMAND_EXEC;
+    const selectedAction: EAction = action?.action ?? EAction.COMMAND_EXEC;
+    let parsedData: string;
+
+    try {
+      const rawData: string = action?.data ?? '';
+      const json = JSON.parse(rawData);
+      parsedData = json.command || '';
+    } catch {
+      parsedData = action?.data ?? '';
+    }
+
     return this.fb.group({
       action: [selectedAction, Validators.required],
-      data: [action?.data ?? '', Validators.required],
+      data: [parsedData, Validators.required],
       allValues: [ACTIONS[selectedAction].choices],
     });
   }
@@ -143,7 +163,6 @@ export class EventModalComponent {
   }
 
   private getActionDataFromValue(action: EAction, value: string): string {
-    console.log(action == EAction.COMMAND_EXEC)
     if (action == EAction.COMMAND_EXEC) {
       return JSON.stringify({ command: value });
     }
