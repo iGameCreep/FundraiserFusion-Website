@@ -1,7 +1,9 @@
-import { Action } from "./Action";
+import {IAction} from "./IAction";
+import {StreamLabsEvent} from "./external/streamlabs/StreamLabsEvents";
 
 export interface IEvent {
-  action: Action;
-  data: string;
-  threshold: number;
+  id: string;
+  donationThreshold: number | null;
+  eventData: StreamLabsEvent;
+  actions: IAction[];
 }

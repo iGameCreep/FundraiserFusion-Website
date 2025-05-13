@@ -1,0 +1,16 @@
+[build]
+  functions = "functions"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+[dev]
+  command = "npm run start"
+  targetPort = 4200
+  port = 8888
+  publish = "dist"

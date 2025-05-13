@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { LandingComponent } from './pages/landing/landing.component';
-import { AuthComponent } from './pages/auth/auth.component';
-import { ConfigComponent } from './pages/config/config.component';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {LandingComponent} from './pages/landing/landing.component';
+import {AuthComponent} from './pages/auth/auth.component';
+import {ConfigComponent} from './pages/config/config.component';
 
 const routes: Routes = [
   {
@@ -16,10 +16,6 @@ const routes: Routes = [
   {
     path: 'config',
     component: ConfigComponent,
-  },
-  {
-    path: '**',
-    redirectTo: '',
   },
 ];
 

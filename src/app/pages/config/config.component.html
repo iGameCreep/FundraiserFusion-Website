@@ -1,20 +1,49 @@
-<input type="file" class="file-input"
-       (change)="onFileSelected($event)" #fileUpload>
+<input type="file"
+       class="file-input"
+       accept="application/json"
+       (change)="onFileSelected($event)"
+       #fileUpload
+>
 
-<div class="file-upload">
+<div>
+   <h2 class="outfit">{{fileName || "No file uploaded yet."}}</h2>
 
-   <h2>{{fileName || "No file uploaded yet."}}</h2>
-
-    <button mat-mini-fab color="primary" class="btn btn-primary"
+    <button class="btn btn-primary"
       (click)="fileUpload.click()">
+      <i class="bi bi-upload"></i>
       Upload Config File
     </button>
 </div>
 
+<app-event-modal
+  *ngIf="showEventModal"
+  [event]="selectedEvent"
+  (onSubmit)="saveEvent($event)"
+  (onClose)="closeModal()"
+></app-event-modal>
 
-<button class="btn btn-primary" (click)="add()">Register New Event</button>
+<button class="btn btn-primary" (click)="openModal()">Register New Event</button>
 <button class="btn btn-primary" (click)="generateConfig()">Generate Config File</button>
 
 <div class="container">
-    <app-event *ngFor="let event of events" [event]="event" (delete)="onDelete($event)" (sort)="sortEvents()"></app-event>
+  <form class="form" [formGroup]="configForm">
+    <h2 class="outfit title">General Settings</h2>
+
+    <label class="outfit" for="cumulate">Cumulate donation events</label>
+    <input
+      id="cumulate"
+      type="checkbox"
+      class="input checkbox"
+      formControlName="cumulateDonationEvents"
+    >
+  </form>
+</div>
+
+<div class="container">
+    <app-event-card
+      *ngFor="let event of configFile.events"
+      [event]="event"
+      (onDelete)="deleteEvent(event)"
+      (onOpenModal)="openModal(event)"
+    ></app-event-card>
 </div>

@@ -1,18 +1,12 @@
 <section class="page">
-    <div *ngIf="!data">
-        <h1>Retrieving informations, Please wait...</h1>
-    </div>
-    <div *ngIf="data" class="card">
-        <h1>Success !</h1>
+  <div *ngIf="!socketData">
+    <h1 class="outfit title">Retrieving informations, Please wait...</h1>
+  </div>
+  <div *ngIf="socketData" class="card">
+    <h1 class="outfit title">Success !</h1>
+    <h3 class="outfit">To setup the notifications in your plugin, simply copy and run this command in your Minecraft server (make sure you have the correct permissions!)</h3>
 
-        <button (click)="copyAccessToken()" class="btn btn-primary">
-            Copy Access Token
-        </button>
-        <button (click)="copyRefreshToken()" class="btn btn-primary">
-            Copy Refresh Token
-        </button>
-
-        <h2>Expires On</h2>
-        <p>{{ expiresOn | date : "long" }}</p>
-    </div>
+    <button (click)="copySocketToken()" class="btn btn-primary">Copy Command</button>
+    <a routerLink="/config" class="btn btn-primary">Configure the plugin</a>
+  </div>
 </section>
