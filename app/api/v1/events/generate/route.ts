@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
-import { randomUUID } from "node:crypto";
 import connectMongoDB from "@/lib/server/database";
-import EventFile from "@/lib/server/database/models/event-file";
+import EventFile from "@/lib/server/database/models/eventFile";
+import { nanoid } from "nanoid";
 
 export async function POST(request: NextRequest) {
     const { data } = await request.json();
@@ -15,13 +15,14 @@ export async function POST(request: NextRequest) {
 
     await connectMongoDB();
 
-    const id = randomUUID();
-    const eventFile = new EventFile({
+    const id = nanoid(8);
+    const fileObject = {
         id: id,
         b64: data.b64,
-    });
+    };
 
+    const eventFile = new EventFile(fileObject);
     await eventFile.save();
 
-    return Response.json(eventFile);
+    return Response.json(fileObject);
 }

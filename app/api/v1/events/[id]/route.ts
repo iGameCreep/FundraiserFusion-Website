@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import connectMongoDB from "@/lib/server/database";
-import EventFile from "@/lib/server/database/models/event-file";
+import EventFile from "@/lib/server/database/models/eventFile";
+import { cleanMongoObject } from "@/lib/utils/clean";
 
 export async function GET(
     _req: NextRequest,
@@ -21,5 +22,6 @@ export async function GET(
         return new Response(null, { status: 404 });
     }
 
-    return Response.json(eventFile);
+    const cleaned = cleanMongoObject(eventFile);
+    return Response.json(cleaned);
 }
